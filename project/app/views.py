@@ -10,8 +10,21 @@ def home(request):
     return Response({"message":"API working"})
 
 
-@api_view(['GET'])
+@api_view(['GET','POST'])
 def students(request):
-    data = Student.objects.all()
-    serializer = StudentSerializer(data, many=True)
-    return Response(serializer.data)
+
+    # GET → data show
+    if request.method == 'GET':
+        data = Student.objects.all()
+        serializer = StudentSerializer(data, many=True)
+        return Response(serializer.data)
+
+    # POST → data add
+    elif request.method == 'POST':
+        serializer = StudentSerializer(data=request.data)
+
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data)
+
+        return Response(serializer.errors)
